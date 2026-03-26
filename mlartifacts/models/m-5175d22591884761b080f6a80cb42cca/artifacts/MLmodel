@@ -1,0 +1,23 @@
+artifact_path: file:///Users/tiana/Desktop/HSLU/Semester2/ARTIFIN/Project/mlartifacts/models/m-5175d22591884761b080f6a80cb42cca/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.7
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.10.0
+model_id: m-5175d22591884761b080f6a80cb42cca
+model_size_bytes: 553
+model_uuid: m-5175d22591884761b080f6a80cb42cca
+prompts: null
+run_id: 26384c386f8a4ce4b4de11b3ee6859c3
+utc_time_created: '2026-03-26 08:51:38.140167'
