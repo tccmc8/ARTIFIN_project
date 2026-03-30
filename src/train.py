@@ -78,7 +78,7 @@ def prepare_data(df: pd.DataFrame):
 
 def split_data(X: pd.DataFrame, y: pd.Series):
     """ Split data into an 80/20 training and test sets. """
-    
+
     return train_test_split(
         X,
         y,
@@ -89,8 +89,7 @@ def split_data(X: pd.DataFrame, y: pd.Series):
 
 def build_models():
     """
-    Define two simple regression models.
-    """
+    Builds the two two regression models. """
     models = {
         "RidgeRegression": {
             "model": Pipeline([
