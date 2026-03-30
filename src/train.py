@@ -26,10 +26,10 @@ EXPERIMENT_NAME = "student-habits-performance"
 
 
 def set_mlflow_tracking():
-    """
-    Use a fixed mlruns folder inside the project.
-    This avoids the 'missing run' problem caused by different working folders.
-    """
+    """ This creates an mlruns folder in the project root if there isn't one already, 
+    setting the tracking UI to this folder. A set folder to store the experiment data. 
+    It worksregarless of the working directory. """
+
     MLRUNS_DIR.mkdir(parents=True, exist_ok=True)
     mlflow.set_tracking_uri(MLRUNS_DIR.as_uri())
 
