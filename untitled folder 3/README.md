@@ -1,1 +1,0 @@
-# ARTIFIN_project
