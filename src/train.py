@@ -120,10 +120,7 @@ def build_models():
 
 
 def evaluate_model(y_true, y_pred):
-    """
-    Return regression metrics.
-    Lower RMSE is better.
-    """
+    """ Calculate metrics for the two models. """
     metrics = {
         "rmse": float(mean_squared_error(y_true, y_pred) ** 0.5),
         "mae": float(mean_absolute_error(y_true, y_pred)),
@@ -133,10 +130,12 @@ def evaluate_model(y_true, y_pred):
 
 
 def train_and_log_models(X_train, X_test, y_train, y_test):
-    """
-    Train both models, log them to MLflow,
-    compare them, and return the best one.
-    """
+    """ Creates an MLflow experiment and sets up the measuring assignments. Runs / trains
+    both models and logs them to MLflow, including the parameters. Performs the model 
+    training and testing and logs the metrics in MLflow. It compares the models using an if
+    loop and returns the best model, its name, its metrics, and a dataframe with all the 
+    results. """
+
     mlflow.set_experiment(EXPERIMENT_NAME)
 
     all_results = []
@@ -186,9 +185,10 @@ def train_and_log_models(X_train, X_test, y_train, y_test):
 
 
 def save_best_model(best_model, best_model_name, best_metrics, feature_columns, category_maps):
-    """
-    Save the best model and metadata locally.
-    """
+    """ Creates readable files that show the model metrics and name and a file that shows
+    the category maps. The eperiment makes two runs, one for each model and then saves the 
+    best model as joblib locally. """
+
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
     model_path = MODELS_DIR / "best_model.joblib"
