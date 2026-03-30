@@ -49,25 +49,22 @@ class PredictionRequest(BaseModel):
 
 
 def load_model():
-    """
-    Load the saved best model.
-    """
+    """ Load the saved best model. """
+    
     model_path = MODELS_DIR / "best_model.joblib"
     return joblib.load(model_path)
 
 
 def load_feature_columns():
-    """
-    Load feature column names.
-    """
+    """ Load feature column names. """
+    
     features_path = MODELS_DIR / "feature_columns.joblib"
     return joblib.load(features_path)
 
 
 def load_model_info():
-    """
-    Load saved model info.
-    """
+    """ Load saved model info. """
+    
     info_path = MODELS_DIR / "best_model_info.json"
     with open(info_path, "r", encoding="utf-8") as f:
         return json.load(f)
