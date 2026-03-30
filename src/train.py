@@ -35,9 +35,7 @@ def set_mlflow_tracking():
 
 
 def load_data(path: Path) -> pd.DataFrame:
-    """
-    Load the dataset from CSV.
-    """
+    """ Load the dataset CSV."""
     return pd.read_csv(path)
 
 
