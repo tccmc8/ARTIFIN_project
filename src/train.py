@@ -36,13 +36,15 @@ def set_mlflow_tracking():
 
 def load_data(path: Path) -> pd.DataFrame:
     """ Load the dataset CSV."""
+
     return pd.read_csv(path)
 
 
 def prepare_data(df: pd.DataFrame):
     """
-    Clean the dataset and encode text columns into numbers.
-    """
+    Cleans the dataset of missing values, then encodes text columns into numbers. Then 
+    splits the dataset into features and target - the x, y split. """
+
     df = df.copy()
 
     if "student_id" in df.columns:
@@ -75,9 +77,8 @@ def prepare_data(df: pd.DataFrame):
 
 
 def split_data(X: pd.DataFrame, y: pd.Series):
-    """
-    Split data into training and test sets.
-    """
+    """ Split data into an 80/20 training and test sets. """
+    
     return train_test_split(
         X,
         y,
