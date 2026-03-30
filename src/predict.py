@@ -16,34 +16,30 @@ SAMPLE_INDEX = 2
 
 
 def load_model():
-    """
-    Load the saved best model.
-    """
+    """ Load the saved best model. """
+
     model_path = MODELS_DIR / "best_model.joblib"
     return joblib.load(model_path)
 
 
 def load_feature_columns():
-    """
-    Load the saved feature column names.
-    """
+    """ Load the saved feature column names. """
+
     features_path = MODELS_DIR / "feature_columns.joblib"
     return joblib.load(features_path)
 
 
 def load_category_maps():
-    """
-    Load saved category mappings.
-    """
+    """ Load saved category mappings. """
+    
     maps_path = MODELS_DIR / "category_maps.json"
     with open(maps_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def prepare_dataframe(df: pd.DataFrame, category_maps):
-    """
-    Prepare the raw dataset in the same way as training.
-    """
+    """ Prepare the raw dataset in the same way as in train. """
+    
     df = df.copy()
 
     if "student_id" in df.columns:
@@ -62,9 +58,10 @@ def prepare_dataframe(df: pd.DataFrame, category_maps):
 
 
 def load_sample_data(feature_columns, category_maps, sample_index=2):
-    """
-    Load one sample row from the dataset.
-    """
+    """ The same row , 2 in this instance, is extracted from the dataset to make a
+    prediction and compare it to the actual exam score. There is an if clause to check 
+    that the sample row is within the dataset bounds. """
+    
     df = pd.read_csv(DATA_PATH)
     df = prepare_dataframe(df, category_maps)
 
@@ -78,17 +75,15 @@ def load_sample_data(feature_columns, category_maps, sample_index=2):
 
 
 def predict_sample(model, X_sample):
-    """
-    Predict the exam score for one sample.
-    """
+    """ Does the actual prediction for one sample using the model. """
+    
     predicted_score = float(model.predict(X_sample)[0])
     return predicted_score
 
 
 def show_feature_weights(model, feature_columns):
-    """
-    Show feature weights for the saved Ridge model.
-    """
+    """ Show feature weights for the saved Ridge model. """
+    
     scaler = model.named_steps["scaler"]
     ridge = model.named_steps["model"]
 
