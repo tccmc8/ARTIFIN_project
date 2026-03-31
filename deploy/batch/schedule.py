@@ -20,7 +20,8 @@ from sklearn.preprocessing import StandardScaler
 
 
 # ---------- Project paths ----------
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+print("PROJECT_ROOT:", PROJECT_ROOT)
 DATA_PATH = PROJECT_ROOT / "data" / "raw" / "student_habits_performance.csv"
 MODELS_DIR = PROJECT_ROOT / "models"
 MLRUNS_DIR = PROJECT_ROOT / "mlruns"
@@ -185,7 +186,8 @@ def train_and_log_models(X_train, X_test, y_train, y_test, feature_columns, cate
             mlflow.log_metrics(metrics)
             mlflow.sklearn.log_model(model, artifact_path="model")
 
-            # Save the category maps as an artefact so they travel with the model
+            # Save the category maps and feature columns as artefacts
+            # so batch_predict can load everything it needs from MLflow
             with tempfile.TemporaryDirectory() as tmpdir:
                 maps_path = Path(tmpdir) / "category_maps.json"
                 with open(maps_path, "w", encoding="utf-8") as f:
@@ -273,10 +275,10 @@ def batch_predict(run_id: str, batch_df: pd.DataFrame):
 
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
-    # Load model artefact directly from MLflow — no need to touch the local models/ folder
+    # Load model artefact directly from MLflow using the run ID
     model = mlflow.pyfunc.load_model(f"runs:/{run_id}/model")
 
-    # Download the category maps and feature columns that were saved alongside the model
+    # Download the category maps and feature columns saved alongside the model
     preprocessing_dir = mlflow.artifacts.download_artifacts(
         artifact_uri=f"runs:/{run_id}/preprocessing"
     )
@@ -287,6 +289,14 @@ def batch_predict(run_id: str, batch_df: pd.DataFrame):
 
     # Apply the same encoding used during training
     batch_encoded = batch_df.copy()
+
+    # Fill missing parental education values before encoding —
+    # same as prepare_data(), prevents NaN values crashing Ridge
+    if "parental_education_level" in batch_encoded.columns:
+        batch_encoded["parental_education_level"] = batch_encoded["parental_education_level"].fillna(
+            batch_encoded["parental_education_level"].mode()[0]
+        )
+
     for column, mapping in category_maps.items():
         if column in batch_encoded.columns:
             batch_encoded[column] = batch_encoded[column].astype(str).str.strip().str.title()
