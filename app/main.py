@@ -71,18 +71,16 @@ def load_model_info():
 
 
 def load_category_maps():
-    """
-    Load saved category mappings.
-    """
+    """ Load saved category mappings. """
+    
     maps_path = MODELS_DIR / "category_maps.json"
     with open(maps_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def prepare_raw_dataframe(df: pd.DataFrame, category_maps):
-    """
-    Prepare raw dataset rows like training.
-    """
+    """ Prepare raw dataset rows like training. """
+    
     df = df.copy()
 
     if "student_id" in df.columns:
@@ -101,9 +99,7 @@ def prepare_raw_dataframe(df: pd.DataFrame, category_maps):
 
 
 def prepare_input_row(request: PredictionRequest, category_maps, feature_columns):
-    """
-    Convert API input into the same numeric format used in training.
-    """
+    """ Convert API input into the same numeric format used in training."""
     row = request.model_dump()
 
     for column, mapping in category_maps.items():
@@ -136,10 +132,8 @@ def home():
 
 @app.get("/predict-sample/{sample_index}")
 def predict_sample(sample_index: int):
-    """
-    Predict one sample directly from the dataset by index.
-    Good for testing and demo.
-    """
+    """ Predict one sample directly from the dataset by index. """
+    
     df = pd.read_csv(DATA_PATH)
     df = prepare_raw_dataframe(df, category_maps)
 
