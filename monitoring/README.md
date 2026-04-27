@@ -18,6 +18,7 @@ The monitoring pipeline detects data drift and tracks model performance over tim
 
 ## Structure
 
+'''
 ├── data/
 │   └── raw/
 │       └── student_habits_performance.csv
@@ -30,6 +31,7 @@ The monitoring pipeline detects data drift and tracks model performance over tim
 │       ├── generate_batch.py       
 │       └── calculate_metrics.py
 |
+'''
 
 --- 
 
