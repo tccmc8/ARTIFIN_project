@@ -14,6 +14,7 @@ student-habits-mlops/
 ├── data/
 │   └── raw/
 │       └── student_habits_performance.csv
+│   └── current_batches/            # Simulated incoming data batches
 │
 ├── src/
 │   ├── train.py
@@ -28,6 +29,20 @@ student-habits-mlops/
 │   ├── best_model_info.json
 │   └── category_maps.json
 │
+├── deploy/
+│   ├── webservices/
+│   │   └── Dockerfile         
+│   └── batch/
+│       ├── deploy.py   
+│       └── schedule.py       
+|
+├── monitoring/
+│   ├── docker-compose.yaml       
+│   └── scripts/
+│       ├── prepare_reference.py    
+│       ├── generate_batch.py       
+│       └── calculate_metrics.py
+|
 ├── mlruns/            # MLflow experiment tracking data
 │
 ├── requirements.txt
@@ -174,3 +189,13 @@ The API expects integer-encoded categorical values (matching the training encodi
 - **pandas** — Data loading and manipulation
 - **joblib** — Model serialisation
 - **uvicorn** — ASGI web server to run FastAPI
+
+---
+
+## Reproducibility
+
+All steps are reproducible from the raw dataset:
+1. Clone this repository
+2. Place `student_habits_performance.csv` in `data/raw/`
+3. Run `python src/train.py` to train and save the model
+4. Run the monitoring setup steps above to spin up the full observability stack
