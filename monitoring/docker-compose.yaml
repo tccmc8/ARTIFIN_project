@@ -33,6 +33,46 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
 
+  mlflow:
+    image: python:3.11-slim
+    container_name: student-habits-mlflow
+    command: >
+      bash -c "pip install mlflow psycopg2-binary --quiet &&
+               mlflow server
+               --backend-store-uri postgresql://postgres:example@db:5432/test
+               --default-artifact-root /mlruns
+               --host 0.0.0.0
+               --port 5000"
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - mlruns_data:/mlruns
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+  api:
+    image: python:3.11-slim
+    container_name: student-habits-api
+    working_dir: /app
+    command: >
+      bash -c "pip install fastapi uvicorn[standard] pydantic joblib pandas scikit-learn --quiet &&
+               uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
+    volumes:
+      - .:/app
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
 volumes:
   postgres_data:
   grafana_data:
+  mlruns_data: 

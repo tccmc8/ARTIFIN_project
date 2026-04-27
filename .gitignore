@@ -5,3 +5,6 @@ mlruns/
 models/
 .DS_Store
 outputs/
+raw/
+current_batches/
+outputs/
