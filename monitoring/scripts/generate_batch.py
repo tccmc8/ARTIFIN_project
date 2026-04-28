@@ -63,17 +63,18 @@ def prepare_dataframe(df: pd.DataFrame, category_maps: dict) -> pd.DataFrame:
     return df
 
 
-def introduce_drift(df_raw: pd.DataFrame) -> pd.DataFrame:
-    """
-    Optionally shift feature distributions to simulate data drift.
-    Toggle the block below on/off to test drift detection.
-
+#def introduce_drift(df_raw: pd.DataFrame) -> pd.DataFrame:
+    """ Artificial dift:
     Here we increase study_hours_per_day by 2 hours and reduce
     social_media_hours by 1 hour, mimicking a student behaviour change.
     """
-    df = df_raw.copy()
+    #df = df_raw.copy()
 
-    return df
+    # uncomment to simulate artificial drift
+    # df["study_hours_per_day"] = (df["study_hours_per_day"] + 2.0).clip(upper=24)
+    # df["social_media_hours"] = (df["social_media_hours"] - 1.0).clip(lower=0)
+
+    #return df
 
 
 def main():
@@ -89,7 +90,7 @@ def main():
 
     batch_raw = df.sample(n=BATCH_SIZE, replace=True, random_state=None).reset_index(drop=True)
 
-    batch_raw = introduce_drift(batch_raw)
+    #batch_raw = introduce_drift(batch_raw)
 
     batch_numeric = batch_raw[NUMERIC_FEATURES].copy()
 
