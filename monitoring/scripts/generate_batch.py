@@ -70,8 +70,8 @@ def introduce_drift(df_raw: pd.DataFrame) -> pd.DataFrame:
     df = df_raw.copy()
 
     # uncomment to simulate artificial drift
-    # df["study_hours_per_day"] = (df["study_hours_per_day"] + 2.0).clip(upper=24)
-    # df["social_media_hours"] = (df["social_media_hours"] - 1.0).clip(lower=0)
+    df["study_hours_per_day"] = (df["study_hours_per_day"] + 2.0).clip(upper=24)
+    df["social_media_hours"] = (df["social_media_hours"] - 1.0).clip(lower=0)
 
     return df
 
