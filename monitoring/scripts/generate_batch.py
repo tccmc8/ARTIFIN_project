@@ -64,10 +64,9 @@ def prepare_dataframe(df: pd.DataFrame, category_maps: dict) -> pd.DataFrame:
 
 
 #def introduce_drift(df_raw: pd.DataFrame) -> pd.DataFrame:
-    """ Artificial dift:
-    Here we increase study_hours_per_day by 2 hours and reduce
-    social_media_hours by 1 hour, mimicking a student behaviour change.
-    """
+    #""" Artificial dift: Here we increase study_hours_per_day by 2 hours and reduce
+    #social_media_hours by 1 hour, mimicking a student behaviour change. """
+    
     #df = df_raw.copy()
 
     # uncomment to simulate artificial drift
