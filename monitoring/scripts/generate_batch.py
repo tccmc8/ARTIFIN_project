@@ -89,7 +89,7 @@ def main():
 
     batch_raw = df.sample(n=BATCH_SIZE, replace=True, random_state=None).reset_index(drop=True)
 
-    #batch_raw = introduce_drift(batch_raw)
+    batch_raw = introduce_drift(batch_raw)
 
     batch_numeric = batch_raw[NUMERIC_FEATURES].copy()
 
