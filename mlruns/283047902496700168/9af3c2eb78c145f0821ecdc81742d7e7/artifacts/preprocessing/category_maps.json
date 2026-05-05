@@ -1,0 +1,30 @@
+{
+    "gender": {
+        "Male": 0,
+        "Female": 1,
+        "Other": 2
+    },
+    "part_time_job": {
+        "No": 0,
+        "Yes": 1
+    },
+    "diet_quality": {
+        "Poor": 0,
+        "Fair": 1,
+        "Good": 2
+    },
+    "parental_education_level": {
+        "High School": 0,
+        "Bachelor": 1,
+        "Master": 2
+    },
+    "internet_quality": {
+        "Poor": 0,
+        "Average": 1,
+        "Good": 2
+    },
+    "extracurricular_participation": {
+        "No": 0,
+        "Yes": 1
+    }
+}

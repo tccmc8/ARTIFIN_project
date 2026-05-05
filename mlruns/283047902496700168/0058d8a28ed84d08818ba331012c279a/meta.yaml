@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/tiana/Desktop/HSLU/Semester2/ARTIFIN/Project/student-habits-mlops/mlruns/283047902496700168/0058d8a28ed84d08818ba331012c279a/artifacts
+end_time: 1774942415890
+entry_point_name: ''
+experiment_id: '283047902496700168'
+lifecycle_stage: active
+run_id: 0058d8a28ed84d08818ba331012c279a
+run_name: RidgeRegression
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1774942414156
+status: 3
+tags: []
+user_id: tiana

@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/tiana/Desktop/HSLU/Semester2/ARTIFIN/Project/student-habits-mlops/mlruns/283047902496700168/98b762584bde4ca2b9dadaafea6b2b01/artifacts
+end_time: 1774943417969
+entry_point_name: ''
+experiment_id: '283047902496700168'
+lifecycle_stage: active
+run_id: 98b762584bde4ca2b9dadaafea6b2b01
+run_name: RandomForest
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1774943416639
+status: 3
+tags: []
+user_id: tiana

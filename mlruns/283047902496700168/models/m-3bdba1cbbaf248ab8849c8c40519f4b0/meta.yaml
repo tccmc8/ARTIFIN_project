@@ -1,0 +1,10 @@
+artifact_location: file:///Users/tiana/Desktop/HSLU/Semester2/ARTIFIN/Project/student-habits-mlops/mlruns/283047902496700168/models/m-3bdba1cbbaf248ab8849c8c40519f4b0/artifacts
+creation_timestamp: 1774942414167
+experiment_id: '283047902496700168'
+last_updated_timestamp: 1774942415886
+model_id: m-3bdba1cbbaf248ab8849c8c40519f4b0
+model_type: null
+name: model
+source_run_id: 0058d8a28ed84d08818ba331012c279a
+status: 2
+status_message: null

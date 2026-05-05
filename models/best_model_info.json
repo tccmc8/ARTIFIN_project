@@ -1,0 +1,9 @@
+{
+    "best_model_name": "RidgeRegression",
+    "selection_metric": "rmse",
+    "metrics": {
+        "rmse": 5.098045507823119,
+        "mae": 4.146720522847165,
+        "r2": 0.898646181711628
+    }
+}
