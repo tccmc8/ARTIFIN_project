@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Habits Streaming Demo</title>
+    <meta charset="utf-8">
+</head>
+<body>
+
+<h1>Student Habits — Exam Score Prediction</h1>
+
+<form action="/predict" method="post">
+    <label>Age</label>
+    <input name="age" type="number" min="0" max="100" required><br><br>
+
+    <label>Gender</label>
+    <select name="gender" required>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+    </select><br><br>
+
+    <label>Study hours per day</label>
+    <input name="study_hours_per_day" type="number" step="0.1" min="0" max="24" required><br><br>
+
+    <label>Social media hours</label>
+    <input name="social_media_hours" type="number" step="0.1" min="0" max="24" required><br><br>
+
+    <label>Netflix hours</label>
+    <input name="netflix_hours" type="number" step="0.1" min="0" max="24" required><br><br>
+
+    <label>Part-time job</label>
+    <select name="part_time_job" required>
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+    </select><br><br>
+
+    <label>Attendance percentage</label>
+    <input name="attendance_percentage" type="number" step="0.1" min="0" max="100" required><br><br>
+
+    <label>Sleep hours</label>
+    <input name="sleep_hours" type="number" step="0.1" min="0" max="24" required><br><br>
+
+    <label>Diet quality</label>
+    <select name="diet_quality" required>
+        <option value="Poor">Poor</option>
+        <option value="Fair">Fair</option>
+        <option value="Good">Good</option>
+    </select><br><br>
+
+    <label>Exercise frequency (per week)</label>
+    <input name="exercise_frequency" type="number" min="0" max="7" required><br><br>
+
+    <label>Parental education level</label>
+    <select name="parental_education_level" required>
+        <option value="High School">High School</option>
+        <option value="Bachelor">Bachelor</option>
+        <option value="Master">Master</option>
+    </select><br><br>
+
+    <label>Internet quality</label>
+    <select name="internet_quality" required>
+        <option value="Poor">Poor</option>
+        <option value="Average">Average</option>
+        <option value="Good">Good</option>
+    </select><br><br>
+
+    <label>Mental health rating (0–10)</label>
+    <input name="mental_health_rating" type="number" min="0" max="10" required><br><br>
+
+    <label>Extracurricular participation</label>
+    <select name="extracurricular_participation" required>
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+    </select><br><br>
+
+    <button type="submit">Predict</button>
+</form>
+
+{% if prediction %}
+    <hr>
+    <h2>Prediction Result</h2>
+
+    {% if prediction.error %}
+        <p>{{ prediction.error }}</p>
+    {% elif prediction.prediction and prediction.prediction.error %}
+        <p>Error: {{ prediction.prediction.error }}</p>
+    {% else %}
+        <p>Student ID: {{ prediction.prediction.student_id }}</p>
+        <p>Predicted Exam Score: {{ prediction.prediction.predicted_exam_score }}</p>
+    {% endif %}
+{% endif %}
+
+</body>
+</html>

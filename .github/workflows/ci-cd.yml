@@ -1,0 +1,105 @@
+name: CI/CD for Student Habits Project
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # ──────────────────────────────────────────
+  # CI — run on every push and PR to main.
+  # Installs dependencies in a clean Ubuntu runner, runs pytest, and
+  # checks that the main Python entry points compile.
+  # ──────────────────────────────────────────
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Show repo structure
+        run: ls -R
+        # Quick sanity check — useful when paths break in CI but not locally.
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # pytest = test runner. httpx = FastAPI's TestClient transport.
+          pip install pytest httpx
+
+      - name: Run prediction-core unit tests
+        # These tests use dummy models, so the runner does not need
+        # the trained joblib model or any GCS credentials.
+        run: pytest deploy/webservices/test_prediction_core.py -v
+
+      - name: Run FastAPI integration tests
+        # Exercises the real /predict and / endpoints via TestClient.
+        # The fixture in test_api.py writes dummy model artefacts before
+        # importing the app, so this works in a clean checkout without
+        # a trained model being committed to the repo.
+        run: pytest app/test_api.py -v
+
+      - name: Check Python syntax of main entry points
+        run: |
+          python -m py_compile src/predict.py
+          python -m py_compile app/main.py
+          python -m py_compile src/train.py
+
+  # ──────────────────────────────────────────
+  # CD — only runs after CI passes.
+  # Builds the FastAPI Docker image and pushes it to GitHub Container
+  # Registry (ghcr.io) so it can be pulled and deployed anywhere.
+  # ──────────────────────────────────────────
+  cd:
+    name: Build and Push Docker image
+    runs-on: ubuntu-latest
+    needs: ci
+    # Only push on commits to main, not on pull requests from forks.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set lowercase image name
+        # ghcr.io requires the repo path to be lowercase.
+        id: img
+        run: |
+          echo "name=ghcr.io/${GITHUB_REPOSITORY,,}/student-habits-api" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ${{ steps.img.outputs.name }}:latest \
+            -t ${{ steps.img.outputs.name }}:${{ github.sha }} \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ steps.img.outputs.name }}:latest
+          docker push ${{ steps.img.outputs.name }}:${{ github.sha }}
+
+      # After this job finishes, anyone with access to the package can run:
+      #   docker pull ghcr.io/<owner>/<repo>/student-habits-api:latest
+      #   docker run -p 8000:8000 ghcr.io/<owner>/<repo>/student-habits-api:latest
