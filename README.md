@@ -22,6 +22,7 @@ student-habits-mlops/
 │
 ├── app/
 │   └── main.py
+│   └── test_api.py
 │
 ├── models/            # Generated after training
 │   ├── best_model.joblib
@@ -45,6 +46,17 @@ student-habits-mlops/
 |
 ├── mlruns/            # MLflow experiment tracking data
 │
+├── streaming/
+│   ├── function/
+│       ├── main.py       
+│       └── requirements.txt       
+│   └── ui/
+│       ├── Dockerfile    
+│       ├── main.py       
+│       ├── requirements.txt
+│       └── templates
+│          └── index.html
+|
 ├── requirements.txt
 └── .gitignore
 ```
