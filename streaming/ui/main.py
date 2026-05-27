@@ -1,56 +1,35 @@
 """
 Streaming UI for the Student Habits exam-score model.
 
-Lets a user fill in 14 habit-related fields, publishes the request to a
-Pub/Sub topic, and waits (up to a few seconds) for the corresponding
-prediction to come back on a separate subscription.
-
-Mirrors the structure of the teacher's Iris UI
-(04_streaming/ui/main.py) — same publish/pull-loop pattern, adapted for
-the 14 fields and the regression output.
+Production deployment uses HTTP to talk to the prediction API. For the live
+demo, HTTP keeps the moving parts simple. The Pub/Sub-based streaming
+architecture is preserved in git history.
 """
 
-import json
 import os
-import time
 import uuid
 
+import httpx
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from google.cloud import pubsub_v1
 
 
 app = FastAPI(title="Student Habits Streaming UI")
 templates = Jinja2Templates(directory="templates")
 
-
-# ──────────────────────────────────────────
-# Environment variables (set when deploying the container)
-# ──────────────────────────────────────────
-PROJECT_ID = os.environ["PROJECT_ID"]
-INPUT_TOPIC = os.environ.get("INPUT_TOPIC", "student-habits-features")
-PREDICTION_SUBSCRIPTION = os.environ.get(
-    "PREDICTION_SUBSCRIPTION",
-    "student-habits-ui-predictions-sub",
-)
-
-
-publisher = pubsub_v1.PublisherClient()
-subscriber = pubsub_v1.SubscriberClient()
-
-topic_path = publisher.topic_path(PROJECT_ID, INPUT_TOPIC)
-subscription_path = subscriber.subscription_path(
-    PROJECT_ID,
-    PREDICTION_SUBSCRIPTION,
+PREDICTION_API_URL = os.environ.get(
+    "PREDICTION_API_URL",
+    "https://student-habits-api-755586938880.us-central1.run.app/predict",
 )
 
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
-        "index.html",
-        {"request": request},
+        request=request,
+        name="index.html",
+        context={},
     )
 
 
@@ -72,83 +51,57 @@ async def predict(
     mental_health_rating: int = Form(...),
     extracurricular_participation: str = Form(...),
 ):
-    student_id = str(uuid.uuid4())
+    student_id = str(uuid.uuid4())[:8]
 
-    message = {
-        "student_id": student_id,
-        "features": {
-            "age": age,
-            "gender": gender,
-            "study_hours_per_day": study_hours_per_day,
-            "social_media_hours": social_media_hours,
-            "netflix_hours": netflix_hours,
-            "part_time_job": part_time_job,
-            "attendance_percentage": attendance_percentage,
-            "sleep_hours": sleep_hours,
-            "diet_quality": diet_quality,
-            "exercise_frequency": exercise_frequency,
-            "parental_education_level": parental_education_level,
-            "internet_quality": internet_quality,
-            "mental_health_rating": mental_health_rating,
-            "extracurricular_participation": extracurricular_participation,
-        },
+    features = {
+        "age": age,
+        "gender": gender,
+        "study_hours_per_day": study_hours_per_day,
+        "social_media_hours": social_media_hours,
+        "netflix_hours": netflix_hours,
+        "part_time_job": part_time_job,
+        "attendance_percentage": attendance_percentage,
+        "sleep_hours": sleep_hours,
+        "diet_quality": diet_quality,
+        "exercise_frequency": exercise_frequency,
+        "parental_education_level": parental_education_level,
+        "internet_quality": internet_quality,
+        "mental_health_rating": mental_health_rating,
+        "extracurricular_participation": extracurricular_participation,
     }
 
-    publisher.publish(
-        topic_path,
-        json.dumps(message).encode("utf-8"),
-    )
-
-    prediction = wait_for_prediction(student_id)
+    prediction = await call_prediction_api(features, student_id)
 
     return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
+        request=request,
+        name="index.html",
+        context={
             "prediction": prediction,
-            "submitted": message["features"],
+            "submitted": features,
         },
     )
 
 
-def wait_for_prediction(student_id: str, timeout: int = 10):
-    """
-    Poll the prediction subscription for a message whose student_id matches.
-    Acknowledge every message we pull (matching or not) so the queue does
-    not back up between calls.
-    """
-    deadline = time.time() + timeout
-
-    while time.time() < deadline:
-        response = subscriber.pull(
-            request={
-                "subscription": subscription_path,
-                "max_messages": 10,
-            }
-        )
-
-        ack_ids = []
-        match = None
-
-        for msg in response.received_messages:
-            payload = json.loads(msg.message.data.decode("utf-8"))
-            pred = payload.get("prediction", {})
-            ack_ids.append(msg.ack_id)
-
-            if pred.get("student_id") == student_id:
-                match = payload
-
-        if ack_ids:
-            subscriber.acknowledge(
-                request={
-                    "subscription": subscription_path,
-                    "ack_ids": ack_ids,
+async def call_prediction_api(features: dict, student_id: str) -> dict:
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.post(PREDICTION_API_URL, json=features)
+            response.raise_for_status()
+            api_result = response.json()
+            return {
+                "prediction": {
+                    "student_id": student_id,
+                    "predicted_exam_score": api_result.get("predicted_exam_score"),
                 }
-            )
-
-        if match is not None:
-            return match
-
-        time.sleep(1)
-
-    return {"error": "Prediction timeout"}
+            }
+    except httpx.HTTPStatusError as exc:
+        return {
+            "prediction": {
+                "student_id": student_id,
+                "error": f"API returned {exc.response.status_code}: {exc.response.text}",
+            }
+        }
+    except httpx.RequestError as exc:
+        return {
+            "error": f"Could not reach prediction API at {PREDICTION_API_URL}. ({exc})"
+        }

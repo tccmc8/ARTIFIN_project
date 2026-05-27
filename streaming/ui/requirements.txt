@@ -2,4 +2,4 @@ fastapi
 uvicorn
 jinja2
 python-multipart
-google-cloud-pubsub
+httpx
