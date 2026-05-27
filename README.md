@@ -199,3 +199,5 @@ All steps are reproducible from the raw dataset:
 2. Place `student_habits_performance.csv` in `data/raw/`
 3. Run `python src/train.py` to train and save the model
 4. Run the monitoring setup steps above to spin up the full observability stack
+
+_Last demo run: Wed May 27 20:41:09 CEST 2026_
