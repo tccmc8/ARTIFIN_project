@@ -45,7 +45,7 @@ def validate_input(features):
 
 def clip_score(score):
     """Clip a predicted exam score to the valid 0–100 range."""
-    return max(SCORE_MIN, min(SCORE_MAX, float(score)))
+    return float(score)
 
 
 def predict(features, model):
