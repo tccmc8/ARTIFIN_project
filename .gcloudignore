@@ -1,0 +1,18 @@
+# Files to exclude from gcloud uploads (Cloud Build, Cloud Run, etc.).
+# Note: we deliberately do NOT defer to .gitignore here, because we need
+# to upload models/ (which IS gitignored) for the Cloud Run image.
+
+.git/
+.gitignore
+.github/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+mlruns/
+outputs/
+current_batches/
+.pytest_cache/
+*.log
+Dockerfile
+cloudbuild.yaml
