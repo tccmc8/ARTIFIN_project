@@ -91,6 +91,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
+            -f app/Dockerfile \
             -t ${{ steps.img.outputs.name }}:latest \
             -t ${{ steps.img.outputs.name }}:${{ github.sha }} \
             .
