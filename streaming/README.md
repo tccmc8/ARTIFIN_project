@@ -115,4 +115,4 @@ gcloud functions delete student-habits-streaming --region=us-central1 --gen2
 gcloud pubsub topics       delete student-habits-requests
 gcloud pubsub topics       delete student-habits-predictions
 gcloud pubsub subscriptions delete predictions-test
-``
+```
