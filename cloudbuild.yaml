@@ -1,0 +1,30 @@
+# Cloud Build config for both Cloud Run images.
+# Builds the API and UI in parallel and pushes both to Artifact Registry.
+#
+# Run from the project root:
+#   gcloud builds submit --config cloudbuild.yaml
+
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-api'
+    args:
+      - 'build'
+      - '-f'
+      - 'app/Dockerfile'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/student-habits-api:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-ui'
+    waitFor: ['-']          # run in parallel with build-api
+    dir: 'streaming/ui'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/student-habits-ui:latest'
+      - '.'
+
+images:
+  - 'gcr.io/$PROJECT_ID/student-habits-api:latest'
+  - 'gcr.io/$PROJECT_ID/student-habits-ui:latest'

@@ -8,3 +8,5 @@ outputs/
 raw/
 current_batches/
 outputs/
+eda_figures/
+*.bak

@@ -35,28 +35,30 @@ student-habits-mlops/
 │   │   └── Dockerfile         
 │   └── batch/
 │       ├── deploy.py   
-│       └── schedule.py       
-|
+│       └── schedule.py    
+│  
 ├── monitoring/
 │   ├── docker-compose.yaml       
 │   └── scripts/
 │       ├── prepare_reference.py    
 │       ├── generate_batch.py       
 │       └── calculate_metrics.py
-|
+│
 ├── mlruns/            # MLflow experiment tracking data
 │
 ├── streaming/
 │   ├── function/
-│       ├── main.py       
-│       └── requirements.txt       
+│       ├── main.py
+│       └── requirements.txt
 │   └── ui/
-│       ├── Dockerfile    
-│       ├── main.py       
+│       ├── Dockerfile      # Cloud Run image for the streaming UI
+│       ├── main.py
 │       ├── requirements.txt
 │       └── templates
 │          └── index.html
 |
+├── EDA.ipynb          # Exploratory Data Analysis
+├── cloudbuild.yaml         # Cloud Build config (builds app/Dockerfile)
 ├── requirements.txt
 └── .gitignore
 ```
@@ -85,11 +87,16 @@ python src/train.py
 
 This will:
 - Load and preprocess the dataset
-- Run **two experiments** under the `Student_Habits_Academic_Performance` MLflow experiment:
+- Tune **five base models** with 5-fold `GridSearchCV` under the `student-habits-performance` MLflow experiment:
    - **Ridge Regression** (linear baseline)
-   - **Random Forest Regressor** (ensemble)
-- Log parameters, CV metrics, val metrics, and test metrics for both runs
-- Save the best model (lowest RMSE) to the `models/` folder
+   - **Random Forest Regressor** (ensemble)a
+  - **Lasso Regression** (L1-regularised linear with automatic feature selection)
+  - **K-Nearest Neighbours** (instance-based non-parametric baseline)
+  - **Random Forest Regressor** (bagged decision trees)
+  - **XGBoost Regressor** (gradient-boosted trees)
+- Add a **VotingRegressor** (averaging ensemble of the five tuned models), evaluated as a sixth run
+- Log the parameter grid, chosen best hyperparameters, CV best RMSE, and test-set RMSE/MAE/R² for every run
+- Save the best model (lowest test RMSE) to the `models/` folder
 - Save `scaler.joblib` and `best_model.joblib` locally for the API
 
 ### 2. View MLflow Experiment Results
