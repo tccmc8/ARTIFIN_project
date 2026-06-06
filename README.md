@@ -209,6 +209,10 @@ The API expects integer-encoded categorical values (matching the training encodi
 - **joblib** — Model serialisation
 - **uvicorn** — ASGI web server to run FastAPI
 
+### AI Assistance
+
+**Claude (Anthropic)** was used as a coding and debugging tool throughout this project — assisting with code scaffolding, error diagnosis, and explanation of library APIs. All code has been read, understood, and verified by the author. All AI assistance is declared in the tools table at the top of each notebook, in compliance with the ARTIFIN academic integrity guidelines.
+
 ---
 
 ## Reproducibility
